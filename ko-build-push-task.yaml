@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: ko-build-push
+spec:
+  params:
+    - name: registry-url
+      description: "컨테이너 레지스트리 URL"
+      type: string
+    - name: tag
+      description: "이미지 태그"
+      type: string
+    - name: build-path
+      description: "Go 빌드 경로"
+      type: string
+      default: "."
+    - name: secret-name
+      description: "Docker 인증 secret 이름"
+      type: string
+      default: ""
+  workspaces:
+    - name: source
+      description: "소스 코드 워크스페이스"
+  steps:
+    - name: build-and-push
+      image: cgr.dev/chainguard/ko
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: KO_DOCKER_REPO
+          value: $(params.registry-url)
+        - name: DOCKER_CONFIG
+          value: /docker-config
+      volumeMounts:
+        - name: docker-config
+          mountPath: /docker-config
+      script: |
+        #!/bin/sh
+        set -eu
+
+        git config --global --add safe.directory $(workspaces.source.path)
+        ko build -B -t $(params.tag) $(params.build-path)
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: $(params.secret-name)
+        optional: true
