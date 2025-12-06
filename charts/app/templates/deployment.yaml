@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.fullname" . }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "app.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app.fullname" . }}
+    spec:
+      containers:
+        - name: {{ include "app.fullname" . }}
+          image: {{ required "image is required" .Values.image }}
+          {{- if .Values.ports }}
+          ports:
+            {{- range .Values.ports }}
+            - containerPort: {{ . }}
+            {{- end}}
+          {{- end}}
+          {{- if .Values.env }}
+          env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end}}
+          {{- end}}
+          {{- if .Values.volume.enabled }}
+          volumeMounts:
+            - name: {{ include "app.fullname" . }}-volume
+              mountPath: {{ required "path is required" .Values.volume.path }}
+          {{- end}}
+      {{- if .Values.volume.enabled }}
+      volumes:
+        - name: {{ include "app.fullname" . }}-volume
+          persistentVolumeClaim:
+            claimName: {{ include "app.fullname" . }}
+      {{- end}}
+

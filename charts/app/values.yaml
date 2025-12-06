@@ -1,0 +1,14 @@
+replicas: 1
+ports: []
+image: ""
+env: []
+
+route:
+  enabled: false
+  port: 1234
+  host: ""
+
+volume:
+  enabled: false
+  size: 1Gi
+  path: ""
