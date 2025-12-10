@@ -1,0 +1,55 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: git-ko-build-push
+spec:
+  params:
+    - name: url
+      type: string
+      description: 클론할 Git 리포지토리 URL
+    - name: revision
+      type: string
+      description: 체크아웃할 브랜치/태그/커밋
+      default: main
+    - name: image
+      type: string
+      description: 이미지 이름
+    - name: secret-name
+      type: string
+      description: Docker 인증 secret 이름
+    - name: build-path
+      type: string
+      description: Go 빌드 경로
+      default: "."
+  workspaces:
+    - name: source
+      description: 소스 코드 워크스페이스
+  tasks:
+    - name: git-clone
+      taskRef:
+        name: my-git-clone
+      params:
+        - name: url
+          value: $(params.url)
+        - name: revision
+          value: $(params.revision)
+      workspaces:
+        - name: source
+          workspace: source
+    - name: build-push
+      taskRef:
+        name: ko-build-push
+      runAfter:
+        - git-clone
+      params:
+        - name: image
+          value: $(params.image)
+        - name: tag
+          value: $(params.revision)
+        - name: build-path
+          value: $(params.build-path)
+        - name: secret-name
+          value: $(params.secret-name)
+      workspaces:
+        - name: source
+          workspace: source
