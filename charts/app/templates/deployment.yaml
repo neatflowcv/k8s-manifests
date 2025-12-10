@@ -28,6 +28,12 @@ spec:
               value: {{ .value | quote }}
             {{- end}}
           {{- end}}
+          {{- if .Values.args }}
+          args:
+            {{- range .Values.args }}
+            - {{ . | quote }}
+            {{- end}}
+          {{- end}}
           {{- if .Values.volume.enabled }}
           volumeMounts:
             - name: {{ include "app.fullname" . }}-volume

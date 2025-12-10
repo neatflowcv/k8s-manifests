@@ -2,6 +2,7 @@ replicas: 1
 ports: []
 image: ""
 env: []
+args: []
 
 route:
   enabled: false
