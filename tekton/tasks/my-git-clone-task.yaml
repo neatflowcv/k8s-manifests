@@ -23,14 +23,5 @@ spec:
         #!/bin/sh
         set -eu
 
-        if [ -d .git ]; then
-          echo "기존 리포지토리 감지: git fetch / pull 수행"
-          git remote set-url origin "$(params.url)" || true
-          git fetch --all --prune
-          git checkout "$(params.revision)"
-          git pull --ff-only origin "$(params.revision)" || true
-        else
-          echo "새 리포지토리 클론"
-          git clone "$(params.url)" .
-          git checkout "$(params.revision)"
-        fi
+        git clone "$(params.url)" .
+        git checkout "$(params.revision)"
