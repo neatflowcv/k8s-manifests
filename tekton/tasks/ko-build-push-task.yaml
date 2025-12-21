@@ -10,10 +10,6 @@ spec:
     - name: tag
       description: "이미지 태그"
       type: string
-    - name: build-path
-      description: "Go 빌드 경로"
-      type: string
-      default: "."
     - name: secret-name
       description: "Docker 인증 secret 이름"
       type: string
@@ -37,7 +33,7 @@ spec:
         set -eu
 
         git config --global --add safe.directory $(workspaces.source.path)
-        ko build -B -t $(params.tag) $(params.build-path)
+        ko build -B -t $(params.tag) ./cmd/*
   volumes:
     - name: docker-config
       secret:
