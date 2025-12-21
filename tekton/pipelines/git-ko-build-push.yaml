@@ -17,10 +17,6 @@ spec:
     - name: secret-name
       type: string
       description: Docker 인증 secret 이름
-    - name: build-path
-      type: string
-      description: Go 빌드 경로
-      default: "."
   workspaces:
     - name: source
       description: 소스 코드 워크스페이스
@@ -46,8 +42,6 @@ spec:
           value: $(params.image)
         - name: tag
           value: $(params.revision)
-        - name: build-path
-          value: $(params.build-path)
         - name: secret-name
           value: $(params.secret-name)
       workspaces:
